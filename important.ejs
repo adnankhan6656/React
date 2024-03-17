@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Form Validation</title>
+<style>
+    .error {
+        color: red;
+    }
+</style>
+</head>
+<body>
+
+<form id="myForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <span id="nameError" class="error"></span><br>
+    
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email">
+    <span id="emailError" class="error"></span><br>
+    
+    <div id="workExperienceEntries">
+        <!-- Initially empty, will be populated dynamically -->
+    </div>
+    
+    <button type="button" id="addExperience">Add Work Experience</button>
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    document.getElementById('addExperience').addEventListener('click', function() {
+        var entryContainer = document.createElement('div');
+        entryContainer.classList.add('workExperienceEntry');
+        
+        entryContainer.innerHTML = `
+            <label>Company Name:</label>
+            <input type="text" class="companyName" name="companyName[]">
+            <span class="error companyNameError"></span><br>
+            
+            <label>Designation:</label>
+            <input type="text" class="designation" name="designation[]">
+            <span class="error designationError"></span><br>
+            
+            <label>From Date:</label>
+            <input type="text" class="fromDate" name="fromDate[]">
+            <span class="error fromDateError"></span><br>
+            
+            <label>To Date:</label>
+            <input type="text" class="toDate" name="toDate[]">
+            <span class="error toDateError"></span><br>
+            
+            <button type="button" class="deleteEntry">Delete</button>
+        `;
+        
+        document.getElementById('workExperienceEntries').appendChild(entryContainer);
+    });
+    
+    // Event delegation for dynamically added delete buttons
+    document.getElementById('workExperienceEntries').addEventListener('click', function(event) {
+        if (event.target.classList.contains('deleteEntry')) {
+            event.target.parentNode.remove();
+        }
+    });
+    
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+        // Prevent form submission
+        event.preventDefault();
+        
+        // Reset all error messages
+        var errorMessages = document.querySelectorAll('.error');
+        errorMessages.forEach(function(errorMessage) {
+            errorMessage.textContent = '';
+        });
+        
+        // Validate each work experience entry
+        var entries = document.querySelectorAll('.workExperienceEntry');
+        var isValid = true;
+        entries.forEach(function(entry) {
+            var companyName = entry.querySelector('.companyName').value.trim();
+            var designation = entry.querySelector('.designation').value.trim();
+            var fromDate = entry.querySelector('.fromDate').value.trim();
+            var toDate = entry.querySelector('.toDate').value.trim();
+            
+            // Perform validation for each field
+            if (companyName === '') {
+                entry.querySelector('.companyNameError').textContent = 'Company Name is required';
+                isValid = false;
+            }
+            // Perform validation for other fields
+            
+        });
+        
+        if (isValid) {
+            // If all validations pass, submit the form
+            this.submit();
+        }
+    });
+</script>
+
+</body>
+</html>
+<!-- For Education Details -->
+const express = require('express');
+const mysql = require('mysql');
+
+const app = express();
+const port = 3000;
+
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'your_username',
+  password: 'your_password',
+  database: 'your_database'
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log('Connected to MySQL database');
+});
+
+app.use(express.json());
+
+app.post('/education-details', (req, res) => {
+  const { ApplicantID, EducationType, CourseName, University, PassingYear, Percentage } = req.body;
+
+  const sql = 'INSERT INTO EducationDetails (ApplicantID, EducationType, CourseName, University, PassingYear, Percentage) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(sql, [ApplicantID, EducationType, CourseName, University, PassingYear, Percentage], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      console.log('Inserted education details into database');
+      res.status(201).send('Education details added successfully');
+    }
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
+
+<!-- educatin Detaisl Front end -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Education Details Form</title>
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<h2>Education Details Form</h2>
+
+<form id="educationForm">
+    <label for="ApplicantID">Applicant ID:</label>
+    <input type="text" id="ApplicantID" name="ApplicantID" required><br>
+    
+    <input type="checkbox" id="SSC" name="educationLevel" value="SSC">
+    <label for="SSC">SSC</label><br>
+    <div id="sscFields" class="hidden">
+        <label for="SSCCourseName">Course Name:</label>
+        <input type="text" id="SSCCourseName" name="SSCCourseName"><br>
+        <!-- Add more SSC fields as needed -->
+    </div>
+    
+    <input type="checkbox" id="HSC" name="educationLevel" value="HSC">
+    <label for="HSC">HSC</label><br>
+    <div id="hscFields" class="hidden">
+        <label for="HSCCourseName">Course Name:</label>
+        <input type="text" id="HSCCourseName" name="HSCCourseName"><br>
+        <!-- Add more HSC fields as needed -->
+    </div>
+    
+    <input type="checkbox" id="Bachelor" name="educationLevel" value="Bachelor">
+    <label for="Bachelor">Bachelor</label><br>
+    <div id="bachelorFields" class="hidden">
+        <label for="BachelorCourseName">Course Name:</label>
+        <input type="text" id="BachelorCourseName" name="BachelorCourseName"><br>
+        <!-- Add more Bachelor fields as needed -->
+    </div>
+    
+    <input type="checkbox" id="Master" name="educationLevel" value="Master">
+    <label for="Master">Master</label><br>
+    <div id="masterFields" class="hidden">
+        <label for="MasterCourseName">Course Name:</label>
+        <input type="text" id="MasterCourseName" name="MasterCourseName"><br>
+        <!-- Add more Master fields as needed -->
+    </div>
+    
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    const checkboxes = document.querySelectorAll('input[name="educationLevel"]');
+    const fields = {
+        SSC: document.getElementById('sscFields'),
+        HSC: document.getElementById('hscFields'),
+        Bachelor: document.getElementById('bachelorFields'),
+        Master: document.getElementById('masterFields')
+    };
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', function() {
+            const level = this.value;
+            if (this.checked) {
+                fields[level].classList.remove('hidden');
+            } else {
+                fields[level].classList.add('hidden');
+            }
+        });
+    });
+
+    document.getElementById('educationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Add form submission logic here
+        console.log('Form submitted');
+    });
+</script>
+
+</body>
+</html>
+<!-- education details backend -->
+const express = require('express');
+const mysql = require('mysql');
+
+const app = express();
+const port = 3000;
+
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'your_username',
+  password: 'your_password',
+  database: 'your_database'
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log('Connected to MySQL database');
+});
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.post('/education-details', (req, res) => {
+  const { ApplicantID, SSC, SSCCourseName, HSC, HSCCourseName, Bachelor, BachelorCourseName, Master, MasterCourseName } = req.body;
+
+  let sql = 'INSERT INTO EducationDetails (ApplicantID, EducationType, CourseName) VALUES ?';
+  let values = [];
+
+  if (SSC) {
+    values.push([ApplicantID, 'SSC', SSCCourseName]);
+  }
+  if (HSC) {
+    values.push([ApplicantID, 'HSC', HSCCourseName]);
+  }
+  if (Bachelor) {
+    values.push([ApplicantID, 'Bachelor', BachelorCourseName]);
+  }
+  if (Master) {
+    values.push([ApplicantID, 'Master', MasterCourseName]);
+  }
+
+  db.query(sql, [values], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      console.log('Inserted education details into database');
+      res.status(201).send('Education details added successfully');
+    }
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
+
+
+<!-- Ajax starts -->
+const express = require('express');
+const bodyParser = require('body-parser');
+const mysql = require('mysql');
+
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.set('view engine', 'ejs');
+
+// Database connection
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'your_username',
+  password: 'your_password',
+  database: 'your_database'
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log('Connected to MySQL database');
+});
+
+// Routes
+app.get('/', (req, res) => {
+  res.render('basic_details'); // Render the initial step of the form
+});
+
+// Route for storing basic details
+app.post('/basic-details', (req, res) => {
+  // Handle form submission and insert data into the Basic_Details table
+  const basicDetails = req.body;
+  db.query('INSERT INTO Basic_Details SET ?', basicDetails, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error storing basic details');
+    } else {
+      console.log('Basic details stored successfully');
+      res.json({ success: true }); // Return success response
+    }
+  });
+});
+
+// Route for rendering preference details form
+app.get('/preference-details', (req, res) => {
+  res.render('preference_details');
+});
+
+// Add more routes for other steps of the form
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
+<!-- Ajax ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Details</title>
+</head>
+<body>
+  <h2>Basic Details</h2>
+  <form id="basicDetailsForm">
+    <!-- Your basic details form fields -->
+    <button type="button" id="nextButton">Next</button>
+  </form>
+
+  <script>
+    document.getElementById('nextButton').addEventListener('click', function() {
+      const formData = new FormData(document.getElementById('basicDetailsForm'));
+      // Send form data to server using AJAX
+      fetch('/basic-details', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error storing basic details');
+        }
+        return response.json();
+      })
+      .then(data => {
+        window.location.href = '/preference-details'; // Redirect to next step
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to store basic details');
+      });
+    });
+  </script>
+</body>
+</html>
+<!-- Ajax ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preference Details</title>
+</head>
+<body>
+  <h2>Preference Details</h2>
+  <!-- Your preference details form fields -->
+  <button type="button" onclick="history.back()">Back</button>
+  <!-- Add validation and AJAX submission for this form as well -->
+</body>
+</html>
