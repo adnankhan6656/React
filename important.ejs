@@ -479,6 +479,27 @@ for dynamic cities
   </script>
 </body>
 </html>
+// routes/cities.js
+
+const express = require('express');
+const router = express.Router();
+
+// Sample data for cities, replace this with your actual data source (e.g., database)
+const citiesData = {
+    gujarat: ['Ahmedabad', 'Surat', 'Vadodara'],
+    rajasthan: ['Jaipur', 'Udaipur', 'Jodhpur'],
+    maharashtra: ['Mumbai', 'Pune', 'Nagpur'],
+    west_bengal: ['Kolkata', 'Howrah', 'Durgapur']
+};
+
+// Endpoint to fetch cities based on the selected state
+router.get('/:state', (req, res) => {
+    const state = req.params.state.toLowerCase();
+    const cities = citiesData[state] || [];
+    res.json(cities);
+});
+
+module.exports = router;
 
 
 
