@@ -398,3 +398,87 @@ app.listen(port, () => {
   <!-- Add validation and AJAX submission for this form as well -->
 </body>
 </html>
+for dynamic cities 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Details</title>
+</head>
+<body>
+  <h2>Basic Details</h2>
+
+  <table cellpadding="6">
+    <form id="basicDetailsForm">
+      <p>Basic_Details</p>
+      <tr>
+        <td>Firstname</td>
+        <td><input type="text" name="firstname" id="firstname">
+            <span class="hidden hidfirstname"></span>
+        </td>
+        <td>Lastname</td>
+        <td><input type="text" name="lastname" id="lastname">
+            <span class="hidden hidlastname"></span>
+        </td>
+      </tr>
+      <!-- Other form fields -->
+      <tr>
+        <td>State</td>
+        <td>
+          <select name="statedropdown" id="statedropdown">
+            <option value="" selected disabled hidden>Choose State</option>
+            <option value="gujarat">Gujarat</option>
+            <option value="rajasthan">Rajasthan</option>
+            <option value="maharashtra">Maharashtra</option>
+            <option value="west_bengal">West Bengal</option>
+          </select>
+          <span class="hidden hidstatedropdown"></span>
+        </td>
+        <td>City</td>
+        <td>
+          <select name="city" id="city">
+            <option value="" selected disabled hidden>Choose City</option>
+          </select>
+          <span class="hidden hidcity"></span>
+        </td>
+      </tr>
+      <!-- Other form fields -->
+      <tr>
+        <td colspan="4">
+          <button type="button" id="nextButton">Next</button>
+        </td>
+      </tr>
+    </form>
+  </table>
+
+  <script>
+    document.getElementById('statedropdown').addEventListener('change', fetchCities);
+
+    async function fetchCities() {
+      const state = document.getElementById('statedropdown').value;
+      try {
+        const response = await fetch(`/cities/${state}`);
+        const cities = await response.json();
+
+        const cityDropdown = document.getElementById('city');
+        cityDropdown.innerHTML = '';
+        cities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          cityDropdown.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
+    }
+
+    // Optional: Load cities on page load if a default state is selected
+    window.addEventListener('load', fetchCities);
+  </script>
+</body>
+</html>
+
+
+
