@@ -503,3 +503,17 @@ module.exports = router;
 
 
 
+const form = document.getElementById("preferenceDetails");
+const formData = new FormData(form);
+let obj=[...formData.entries()];
+
+console.log(obj);
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+let response = await fetch('/ss', {
+    method: "POST",
+    headers: myHeaders,
+    mode: "cors",
+    cache: "default",
+    body: JSON.stringify(obj),
+});
